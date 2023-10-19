@@ -3,7 +3,7 @@ export default function Home() {
   return (
     <>
       <div className="flex flex-col">
-        <Button>Click ME</Button>
+        <Button>Hello Here</Button>
       </div>
     </>
   );
