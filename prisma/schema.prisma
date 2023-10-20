@@ -1,11 +1,100 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+model Profile{
+  id    String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique
+  name String 
+  imageUrl String 
+  email String
+
+// Profile model connect with Server model
+  servers Server[]
+
+  // Profile model connect with Member model
+  members Member[]
+
+  // Profile model connect with Channel model => So we know the channel type of the user
+  channels Channel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+model Server{
+  id String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  imageUrl String
+  inviteCode String
+
+  profileId String @db.ObjectId
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  members Member[]
+
+  channels Channel[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+}
+
+enum MemberRole {
+  ADMIN
+  MODERATOR
+  GUEST
+}
+
+model Member{
+  id String   @id @default(auto()) @map("_id") @db.ObjectId
+  role MemberRole @default(GUEST)
+
+  profileId String @db.ObjectId
+  //  Member model connect with Profile model
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  serverId String @db.ObjectId
+  // Member also connect with Server model => So we know which member belong to which server
+  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+  @@index([serverId])
+}
+
+enum ChannelType{
+  TEXT
+  AUDIO
+  VIDEO
+}
+
+model Channel{
+  id String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String 
+  type ChannelType @default(TEXT)
+
+  profileId String @db.ObjectId
+  //  Channel model connect with Profile model
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  serverId String @db.ObjectId
+  // Channel also connect with Server model
+  server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+  @@index([serverId])
+
 }
