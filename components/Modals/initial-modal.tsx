@@ -4,6 +4,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
+import { useRouter } from "next/navigation";
 
 // Created the form Schema
 const formSchema = z.object({
@@ -39,6 +41,8 @@ const formSchema = z.object({
 export const InitialModal = () => {
   // To prevent the hydration error which is coming from Modal
   const [isMounted, setIsMounted] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -57,7 +61,15 @@ export const InitialModal = () => {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      // Making an API call for creating servers on Submit of name & Image
+      await axios.post("/api/servers", values);
+      form.reset();
+      router.refresh();
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //   If component is not mounted then return just NUll
