@@ -55,7 +55,9 @@ export const ServerHeader = ({ server, role }: ServerHeaderprops) => {
 
           {/* If you are a Admin  only  you can change settings for server */}
           {isAdmin && (
-            <DropdownMenuItem className=" px-3 py-2 cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => onOpen("editServer", { server })}
+              className=" px-3 py-2 cursor-pointer">
               Server Setting
               <Settings className=" h-4 w-4 ml-auto" />
             </DropdownMenuItem>
