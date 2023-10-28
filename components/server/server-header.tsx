@@ -65,7 +65,9 @@ export const ServerHeader = ({ server, role }: ServerHeaderprops) => {
 
           {/* If you are a Admin only you can manage members */}
           {isAdmin && (
-            <DropdownMenuItem className=" px-3 py-2 cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => onOpen("members", { server })}
+              className=" px-3 py-2 cursor-pointer">
               Manage Members
               <Users className=" h-4 w-4 ml-auto" />
             </DropdownMenuItem>
