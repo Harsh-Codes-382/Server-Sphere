@@ -7,6 +7,7 @@ import { CreateServerModal } from "@/components/Modals/create-server-modal";
 import { useEffect, useState } from "react";
 import { InviteModal } from "@/components/Modals/invite-modal";
 import { EditServerModal } from "@/components/Modals/edit-server-modal";
+import { MembersModal } from "@/components/Modals/members-modal";
 
 export const ModalProvider = () => {
   // By doing this here we are preventing the modals renders on server side so, avoid hydration Error
@@ -25,6 +26,7 @@ export const ModalProvider = () => {
       <CreateServerModal />
       <InviteModal />
       <EditServerModal />
+      <MembersModal />
     </>
   );
 };
