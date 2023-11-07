@@ -57,6 +57,32 @@ export const MembersModal = () => {
   const { server } = data as { server: ServerWithMembersWithProfiles };
 
 
+  const onKick = async(memberId: string) =>{
+    try{
+      setLoadingId(memberId);
+
+      const url = qs.stringifyUrl({
+        url: `/api/members/${memberId}`,
+        query:{
+          serverId: server?.id,
+        }
+      })
+
+      const response = await axios.delete(url);
+      console.log(response.data);
+      router.refresh();
+      onOpen("members", {server: response.data})
+
+    }
+    catch(error){
+      console.error(error);
+    }
+    finally{
+      setLoadingId("");
+    }
+  }
+
+
   const onRoleChange = async (memberId: string, newrole: MemberRole) =>{
     try {
       // Here set the selected user memberId
@@ -158,12 +184,14 @@ export const MembersModal = () => {
                             </DropdownMenuPortal>
                           </DropdownMenuSub>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={()=> onKick(member.id)}
+                          >
                             <Gavel className="h-4 w-4  mr-2" />
                             Kick Out
                           </DropdownMenuItem>
                         </DropdownMenuContent>
-                      </DropdownMenu>
+                      </DropdownMenu> 
                     </div>
                   )}
                 {/* Shows the loading for the user which we selected and set in loadingId */}
