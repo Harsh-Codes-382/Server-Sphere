@@ -29,6 +29,7 @@ yarn-error.log*
 
 # Add your Own .env so you can hide your .env files from commit on github
 .env
+.txt
 
 # vercel
 .vercel
