@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 import {useRouter} from 'next/navigation';
+import axios from "axios";
 
 
 export const LeaveServerModal = () => {
@@ -39,9 +40,11 @@ export const LeaveServerModal = () => {
       setIsLoading(true);
       await axios.patch(`/api/servers/${server?.id}/leave`);
 
+      // After api call close the modal
       onClose();
 
-      router;.refresh();
+      // Referesh the page so we can see updated info.
+      router.refresh();
       router.push('/');
       }
       catch(error){
