@@ -75,7 +75,9 @@ export const ServerHeader = ({ server, role }: ServerHeaderprops) => {
 
           {/* If you are a Admin or Moderator only then you can create channels on server */}
           {isModerator && (
-            <DropdownMenuItem className="text-indigo-500 dark:text-indigo-400 px-3 py-2 cursor-pointer">
+            <DropdownMenuItem   
+              onClick={()=> onOpen("createChannel", {server})}
+              className="text-indigo-500 dark:text-indigo-400 px-3 py-2 cursor-pointer">
               Create Channels
               <PlusCircle className=" h-4 w-4 ml-auto" />
             </DropdownMenuItem>
@@ -93,7 +95,9 @@ export const ServerHeader = ({ server, role }: ServerHeaderprops) => {
 
           {/* If you are a not a Admin only then you can leave the server So moderator & guest are free to leave anytime */}
           {!isAdmin && (
-            <DropdownMenuItem className=" px-3 py-2 cursor-pointer">
+            <DropdownMenuItem 
+              onClick={()=> onOpen("leaveServer", {server})}
+              className=" px-3 py-2 cursor-pointer">
               Leave Server
               <LogOut className=" h-4 w-4 ml-auto" />
             </DropdownMenuItem>
