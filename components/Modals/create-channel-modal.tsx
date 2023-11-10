@@ -37,6 +37,7 @@ import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 import { ChannelType } from "@prisma/client";
+import { useEffect } from "react";
 
 // Created the form Schema
 const formSchema = z.object({
@@ -61,18 +62,33 @@ export const CreateChannelModal = () => {
 
   const params = useParams();
   
-  const { isOpen, onClose, type } = useModal();
+  const { isOpen, onClose, type, data } = useModal();
 
   const IsModalOpen = isOpen && type === "createChannel";
 
+  const { channelType } = data;
+
   const form = useForm({
-    
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+
+      // channelType is what we are sending type of channel when opening the modal
+      // so, default value will be channelType or if we didn't pass then default is TEXT type
+
+      type: channelType || ChannelType.TEXT,
     },
   });
+
+  // This useEeffect is only setting that type when component mounts
+  useEffect(()=>{
+    if(channelType){
+      form.setValue("type", channelType);
+    }
+    else{
+      form.setValue("type", ChannelType.TEXT);
+    }
+  },[channelType, form])
 
  
   const isLoading = form.formState.isSubmitting;
