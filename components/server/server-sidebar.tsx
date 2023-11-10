@@ -13,7 +13,8 @@ import { ServerHeader } from "./server-header";
 import ServerSearch from "./server-search";
 import ServerSection from "./server-section";
 import ServerChannel from "./server-channel";
-import { ServerMember } from "./server-member";
+import ServerMember from "./server-member";
+
 
 interface ServerSideBarProps {
   serverId: string;
@@ -146,65 +147,93 @@ const ServerSideBar = async ({ serverId }: ServerSideBarProps) => {
           </div>
           <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md my-2" />
           {/* Render the textChannels in serverSection component when there are text channels  */}
-          {!!TextChannels?.length && (
-            <div className="mb-2">
-              <ServerSection
-                sectionType="channels"
-                channelType={ChannelType.TEXT}
-                role={role}
-                label="Text Channels"
-              />
-              {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
-              {TextChannels?.map((channel) => (
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  server={server}
+          <div className="space-y-[2px]">
+            {!!TextChannels?.length && (
+              <div className="mb-2">
+                <ServerSection
+                  sectionType="channels"
+                  channelType={ChannelType.TEXT}
                   role={role}
+                  label="Text Channels"
                 />
-              ))}
-            </div>
-          )}
+                {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
+                {TextChannels?.map((channel) => (
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    role={role}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
           {/*  */}
-          {!!AudioChannels?.length && (
-            <div className="mb-2">
-              <ServerSection
-                sectionType="channels"
-                channelType={ChannelType.AUDIO}
-                role={role}
-                label="Audio Channels"
-              />
-              {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
-              {AudioChannels?.map((channel) => (
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  server={server}
+          <div className="space-y-[2px]">
+            {!!AudioChannels?.length && (
+              <div className="mb-2">
+                <ServerSection
+                  sectionType="channels"
+                  channelType={ChannelType.AUDIO}
                   role={role}
+                  label="Audio Channels"
                 />
-              ))}
-            </div>
-          )}
+                {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
+                {AudioChannels?.map((channel) => (
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    role={role}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
           {/*  */}
-          {!!VideoChannels?.length && (
-            <div className="mb-2">
-              <ServerSection
-                sectionType="channels"
-                channelType={ChannelType.VIDEO}
-                role={role}
-                label="Video Channels"
-              />
-              {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
-              {VideoChannels?.map((channel) => (
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  server={server}
+          <div className="space-y-[2px]">
+            {!!VideoChannels?.length && (
+              <div className="mb-2">
+                <ServerSection
+                  sectionType="channels"
+                  channelType={ChannelType.VIDEO}
                   role={role}
+                  label="Video Channels"
                 />
-              ))}
-            </div>
-          )}
+                {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
+                {VideoChannels?.map((channel) => (
+                  <ServerChannel
+                    key={channel.id}
+                    channel={channel}
+                    server={server}
+                    role={role}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-[2px]">
+            {!!members?.length && (
+              <div className="mb-2">
+                <ServerSection
+                  sectionType="members"
+                  role={role}
+                  label="Channel Mates"
+                  server={server}
+                />
+                {/*  */}
+                {members?.map((member) => (
+                  <ServerMember
+                    key={member.id}
+                    member={member}
+                    server={server}
+                  
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </ScrollArea>
       </div>
     </>
