@@ -31,16 +31,17 @@ const ServerSection = ({label, role, sectionType, channelType, server} : ServerS
       {role !== MemberRole.GUEST && sectionType === "channels" && (
         <ActionTooltip label={`create ${LabelChannelType} Channel`} side="top">
           <button
-            onClick={() => onOpen("createChannel")}
+              // Open a modal for create channel with channelType we send like Video, Text 
+            onClick={() => onOpen("createChannel", {channelType})}
             className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition">
             <Plus className="h-4 w-4" />
           </button>
         </ActionTooltip>
       )}
 
-      {/*  */}
+      {/* Only admin can see this and invite friends in  section of member  */}
       {role === MemberRole.ADMIN && sectionType === "members" && (
-        <ActionTooltip label="Invite Folks" side="top">
+        <ActionTooltip label="Manage Folks" side="top">
           <button
             onClick={() => onOpen("members", { server })}
             className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition">
