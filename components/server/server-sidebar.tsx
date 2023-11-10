@@ -1,11 +1,19 @@
 import { Currentprofile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+
+import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
+
 import { ChannelType, MemberRole } from "@prisma/client";
+
 import { redirect } from "next/navigation";
 import { ServerHeader } from "./server-header";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import ServerSearch from "./server-search";
-import { Hash, Mic, ShieldAlert, ShieldCheck, Video } from "lucide-react";
+import ServerSection from "./server-section";
+import ServerChannel from "./server-channel";
+import { ServerMember } from "./server-member";
 
 interface ServerSideBarProps {
   serverId: string;
@@ -136,6 +144,67 @@ const ServerSideBar = async ({ serverId }: ServerSideBarProps) => {
               ]}
             />
           </div>
+          <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md my-2" />
+          {/* Render the textChannels in serverSection component when there are text channels  */}
+          {!!TextChannels?.length && (
+            <div className="mb-2">
+              <ServerSection
+                sectionType="channels"
+                channelType={ChannelType.TEXT}
+                role={role}
+                label="Text Channels"
+              />
+              {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
+              {TextChannels?.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  server={server}
+                  role={role}
+                />
+              ))}
+            </div>
+          )}
+          {/*  */}
+          {!!AudioChannels?.length && (
+            <div className="mb-2">
+              <ServerSection
+                sectionType="channels"
+                channelType={ChannelType.AUDIO}
+                role={role}
+                label="Audio Channels"
+              />
+              {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
+              {AudioChannels?.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  server={server}
+                  role={role}
+                />
+              ))}
+            </div>
+          )}
+          {/*  */}
+          {!!VideoChannels?.length && (
+            <div className="mb-2">
+              <ServerSection
+                sectionType="channels"
+                channelType={ChannelType.VIDEO}
+                role={role}
+                label="Video Channels"
+              />
+              {/* Now show all the channels beneath this component which only shows & let to create the new channels */}
+              {VideoChannels?.map((channel) => (
+                <ServerChannel
+                  key={channel.id}
+                  channel={channel}
+                  server={server}
+                  role={role}
+                />
+              ))}
+            </div>
+          )}
         </ScrollArea>
       </div>
     </>
