@@ -13,7 +13,7 @@ interface ModalStore {
   type: ModalType | null;
   isOpen: boolean;
   data: ModalData;
-  // Tells Which kind of modal we want to open
+  // Tells Which kind of modal we want to open and data is option to pass to onOpen() function
   onOpen: (type: ModalType, data?: ModalData) => void;
   onClose: () => void;
 }
