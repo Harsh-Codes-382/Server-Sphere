@@ -1,12 +1,15 @@
 // This is hook modal store from where we will handle all modals.
 
-import { ChannelType, Server } from "@prisma/client";
+import { Channel, ChannelType, Server } from "@prisma/client";
 import { create } from "zustand";
 
-export type ModalType = "createServer" | "invite" | "editServer" | "members" | "createChannel" | "leaveServer" | "deleteServer";
+
+export type ModalType = "createServer" | "invite" | "editServer" | "members" 
+                        | "createChannel" | "leaveServer" | "deleteServer" | "deleteChannel";
 
 interface ModalData {
   server?: Server;
+  channel?: Channel;
   // It means which type of channel we want to open so send that info as well but it is optional to send 
   channelType?: ChannelType;
 }
