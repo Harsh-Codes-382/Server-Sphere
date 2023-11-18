@@ -18,13 +18,20 @@ const roleIconMap = {
     [MemberRole.ADMIN]: <ShieldAlert className="h-4 w-4 text-rose-500"/>,
     [MemberRole.MODERATOR]: <ShieldCheck className="h-4 w-4 text-indigo-500"/>
 }
+
+
 const ServerMember = ({member, server} : ServerMemberProps) => {
     const params = useParams();
     const router = useRouter();
     const iconRole = roleIconMap[member.role];
 
+    const onclick = () => {
+      router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+    };
+
   return (
     <button
+        onClick={onclick}
         className={cn(
             "group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1",
             // So means when you selected the user & it becomes the current user so add this classes as well on it
