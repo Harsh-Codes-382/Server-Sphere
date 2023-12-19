@@ -68,6 +68,10 @@ model Member{
   //  
   messages Message[]
 
+  // Because there are 2 Member relation in same model so we have given them name which is MemberOne & MemberTwo
+  conversationsInitiated Conversation[] @relation("MemberOne")
+  conversationsRecieved Conversation[] @relation("MemberTwo")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -108,7 +112,7 @@ model Channel{
 model Message {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   content String 
-  
+
   // Optional fileUrl
   fileUrl String?
 
@@ -130,4 +134,25 @@ model Message {
   @@index([channelId])
   @@index([memberId])
 
+}
+
+model Conversation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  // MemberOne & MemberTwo are those member who are chatting with each other one who invited the other member for conversation
+  // Because there are 2 member which have a relation with same model so we have given them name "MemberOne" & "MemberTwo"
+  memberOneId String @db.ObjectId
+  memberOne Member @relation("MemberOne", fields: [memberOneId], references: [id], onDelete: Cascade)
+
+  memberTwoId String @db.ObjectId
+  memberTwo Member @relation("MemberTwo", fields: [memberTwoId], references: [id], onDelete: Cascade)
+
+  @@index([memberTwoId])
+
+  // So Both memberId should be different. Means same user can't invite himself for conversation
+  @@unique([memberOneId, memberTwoId])
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
