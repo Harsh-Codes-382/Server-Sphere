@@ -65,6 +65,9 @@ model Member{
   // Member also connect with Server model => So we know which member belong to which server
   server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
+  //  
+  messages Message[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -91,10 +94,40 @@ model Channel{
   // Channel also connect with Server model
   server Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
+  messages Message[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([profileId])
   @@index([serverId])
+
+}
+
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  content String 
+  
+  // Optional fileUrl
+  fileUrl String?
+
+  // So, we Know who is sending the message. So, connect Member with Message  
+  memberId String @db.ObjectId
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  // On Which channel the message is been sent to. So, connect the Channel with Message
+  channelId String @db.ObjectId
+  Channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  // It will keep a track of which message was deleted because we are not going to delete the message from DB 
+  // but filter those who deleted and show to user 
+  deleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([channelId])
+  @@index([memberId])
 
 }
