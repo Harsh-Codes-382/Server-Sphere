@@ -23,6 +23,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@uploadthing/react": "^5.7.0",
     "axios": "^1.5.1",
+    "bufferutil": "^4.0.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
@@ -40,6 +41,7 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "uploadthing": "^5.7.2",
+    "utf-8-validate": "^5.0.10",
     "zod": "^3.22.4",
     "zustand": "^4.4.3"
   },
