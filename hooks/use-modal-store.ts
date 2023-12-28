@@ -5,13 +5,15 @@ import { create } from "zustand";
 
 
 export type ModalType = "createServer" | "invite" | "editServer" | "members" 
-                        | "createChannel" | "leaveServer" | "deleteServer" | "deleteChannel" | "editChannel";
+                        | "createChannel" | "leaveServer" | "deleteServer" | "deleteChannel" | "editChannel" | "messageFile";
 
 interface ModalData {
   server?: Server;
   channel?: Channel;
   // It means which type of channel we want to open so send that info as well but it is optional to send 
   channelType?: ChannelType;
+  apiUrl?: string;
+  query?: Record<string ,any>;
 }
 
 interface ModalStore {
