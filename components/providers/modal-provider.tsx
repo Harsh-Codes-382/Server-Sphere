@@ -13,6 +13,7 @@ import { LeaveServerModal } from "@/components/Modals/leave-server-modal";
 import { DeleteServerModal } from "@/components/Modals/delete-server-modal";
 import { DeleteChannelModal } from "@/components/Modals/delete-channel-modal";
 import { EditChannelModal } from "@/components/Modals/edit-channel-modal";
+import { MessageFile } from "@/components/Modals/message-file-modal";
 
 export const ModalProvider = () => {
   // By doing this here we are preventing the modals renders on server side so, avoid hydration Error
@@ -37,6 +38,7 @@ export const ModalProvider = () => {
       <DeleteServerModal/>
       <DeleteChannelModal/>
       <EditChannelModal/>
+      <MessageFile/>
     </>
   );
 };
