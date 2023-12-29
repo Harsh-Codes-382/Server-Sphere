@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import qs from "query-string";
 import axios from "axios";
 import {
   Dialog,
@@ -19,11 +19,8 @@ import {
   FormField,
   FormControl,
   FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
 import { useRouter } from "next/navigation";
@@ -31,17 +28,17 @@ import { useModal } from "@/hooks/use-modal-store";
 
 // Created the form Schema
 const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Server name is required.",
-  }),
-  imageUrl: z.string().min(1, {
-    message: "Server face is required",
+    fileUrl: z.string().min(1, {
+    message: "message Attachment is required",
   }),
 });
 
 export const MessageFile = () => {
 
-    const {isOpen, onClose, type, data} = useModal();
+  const {isOpen, onClose, type, data} = useModal();
+
+  // Destruct the apiUrl, query from useModal store
+  const {apiUrl, query} = data;
 
   const router = useRouter();
 
@@ -53,8 +50,7 @@ export const MessageFile = () => {
     // Now connect the formSchema to this form
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      imageUrl: "",
+      fileUrl: "",
     },
   });
 
@@ -68,11 +64,18 @@ export const MessageFile = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // Making an API call for creating servers on Submit of name & Image
-      await axios.post("/api/servers", values);
+      // Making an API call for creating servers on Submit Image
+      const url = qs.stringifyUrl({
+        url: apiUrl || "",
+        query,
+      })
+      await axios.post(url, {
+        ...values,
+        content: values.fileUrl,
+      });
       form.reset();
       router.refresh();
-      window.location.reload();
+      handleClose();
     } catch (error) {
       console.log(error);
     }
@@ -86,11 +89,10 @@ export const MessageFile = () => {
         <DialogContent className="bg-white text-black p-0 overflow-hidden">
           <DialogHeader className="pt-8 px-6">
             <DialogTitle className="text-2xl text-center font-bold">
-              Create Your Server
+              Add an attachment
             </DialogTitle>
             <DialogDescription className="text-center text-zinc-500">
-              Give your Server a Name and image like it Suits. You can always
-              change later if you feel like it.
+              Send a file as a message
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -100,12 +102,12 @@ export const MessageFile = () => {
                 <div className="flex items-center justify-center text-center ">
                   <FormField
                     control={form.control}
-                    name="imageUrl"
+                    name="fileUrl"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <FileUpload
-                            endpoint="serverImage"
+                            endpoint="messageFile"
                             value={field.value}
                             onChange={field.onChange}
                           />
@@ -114,31 +116,11 @@ export const MessageFile = () => {
                     )}
                   />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-                        Server name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
-                          placeholder="Enter Server Name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
               <DialogFooter className="bg-gray-100 px-6 py-4">
                 {/* "primary is a custom variant we created in Button.tsx" */}
                 <Button variant="primary" disabled={isLoading}>
-                  Create
+                  Send
                 </Button>
               </DialogFooter>
             </form>
