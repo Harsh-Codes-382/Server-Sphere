@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/form"
 
 import { Input } from "@/components/ui/input";
-import { Plus, Smile } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
+import { EmojiPicker } from "@/components/emoji-picker";
+import { useRouter } from "next/navigation";
 
 
 interface ChatInputProps {
@@ -34,6 +36,8 @@ export const ChatInput = ({apiUrl, query, name, type}: ChatInputProps)=>{
   // So we can open the messageFile modal by sending the type "messageFile" in onOpen()
     const {onOpen} = useModal();
 
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues:{
@@ -49,6 +53,8 @@ export const ChatInput = ({apiUrl, query, name, type}: ChatInputProps)=>{
                 query,
             });
             await axios.post(url, value);
+            form.reset();
+            router.refresh();
         } catch (error) {
             console.log(error);
         }
@@ -73,10 +79,12 @@ export const ChatInput = ({apiUrl, query, name, type}: ChatInputProps)=>{
                         disabled={isLoading}
                         className="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
                         placeholder={`Message ${type === "conversation" ? name : "#"+name}`}
+                        // field is a data you type
                         {...field}
                       />
                       <div className="absolute top-7 right-8">
-                        <Smile/>
+                        {/* We are sending the onChange() as a props in EmojiPicker component where you pick the emoji and here that emoji will be appear in input along with the field.value */}
+                        <EmojiPicker onChange={(emoji: string)=> field.onChange(`${field.value} ${emoji}`)}/>
                       </div>
                   </div>
                 </FormControl>
