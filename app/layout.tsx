@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { cn } from "@/lib/utils";
 import { ModalProvider } from "@/components/providers/modal-provider";
 import { SocketProvider } from "@/components/providers/socket-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -30,12 +31,13 @@ export default function RootLayout({
             defaultTheme="dark"
             enableSystem={false}
             storageKey="Server-Sphere-theme">
-              {/* Now all components are children of socketProvider */}
+            {/* Now all components are children of socketProvider */}
             <SocketProvider>
               {/* Here is ModalProvider which have all modals */}
               <ModalProvider />
-
-              {children}
+              <QueryProvider>
+                {children}
+              </QueryProvider>
             </SocketProvider>
           </ThemeProvider>
         </body>
