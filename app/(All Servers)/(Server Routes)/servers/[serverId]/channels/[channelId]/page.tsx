@@ -52,6 +52,7 @@ const ChannelIdPage = async ({params}: ChannelIdPageProps) => {
         member={member}
         chatId={channel.id}
         type="channel"
+        // This apiUrl will be url of fetching the messages
         apiUrl="/api/messages"
         socketUrl="/api/socket/messages"
         socketQuery={{
