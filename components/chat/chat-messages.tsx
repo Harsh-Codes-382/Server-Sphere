@@ -5,6 +5,10 @@ import { ChatWelcome } from "./chat-welcome";
 import { useChatQuery } from "@/hooks/use-chat-query";
 import { Loader2, ServerCrash } from "lucide-react";
 import { Fragment } from "react";
+import { ChatItem } from "./chat-item";
+import {format} from "date-fns";
+
+const DATE_FORMAT = "d MMM yyyy, HH:mm";
 
 //  Type of fetched Messages  
 type MessageWithMemberWithProfile = Message & {
@@ -37,9 +41,11 @@ export const ChatMessages = ({
   type,
 }: ChatMessagesProps) => {
 
+
+
   const queryKey = `chat:${chatId}`;
   const {data, fetchNextPage, isFetchingNextPage, hasNextPage, status} = useChatQuery({ queryKey ,apiUrl, paramKey, paramValue});
-  console.log(data);
+
 
   if(status === 'loading'){
     return (
@@ -64,17 +70,27 @@ export const ChatMessages = ({
   return (
     <>
       <div className="flex flex-1 flex-col py-4 overflow-y-auto">
-        <div className="flex-1"/>
-        <ChatWelcome type={type} name={name}/>
+        <div className="flex-1" />
+        <ChatWelcome type={type} name={name} />
         <div className="flex flex-col-reverse mt-auto">
           {data?.pages?.map((group, i) => (
             <Fragment key={i}>
               {group.items.map((message: MessageWithMemberWithProfile) => (
-                <div key={message.id}>
-                  {message.content}
-                </div>
+                <ChatItem
+                  key={message.id}
+                  id={message.id}
+                  member={message.member}
+                  currentMember={member}
+                  socketQuery={socketQuery}
+                  socketUrl={socketUrl}
+                  content={message.content}
+                  deleted={message.deleted}
+                  fileUrl={message.fileUrl}
+                  // So, if message createdAt and UpdatedAt are not same then it means message was edited
+                  isUpdated={message.createdAt !== message.updatedAt}
+                  timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                />
               ))}
-
             </Fragment>
           ))}
         </div>
