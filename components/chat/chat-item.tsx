@@ -1,10 +1,15 @@
 "use client";
 
-import { Member, MemberRole, Profile } from "@prisma/client";
 import UserAvatar from "@/components/user-avatar";
 import { ActionTooltip } from "@/components/action-tooltip";
-import { FileIcon, ShieldAlert, ShieldCheck } from "lucide-react";
 import Image from "next/image";
+
+import { Member, MemberRole, Profile } from "@prisma/client";
+
+import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
+
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface ChatItemProps {
   id: string;
@@ -41,7 +46,10 @@ export const ChatItem = ({
   socketUrl,
 }: ChatItemProps) => {
 
-    const fileType = fileUrl?.split(".").pop();
+  const [isEditing, setIsEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+    const fileType = fileUrl?.split(".").pop(); // get the file extension from backside of fileUrl
 
     const isAdmin = currentMember.role === MemberRole.ADMIN;
     const isModerator = currentMember.role === MemberRole.MODERATOR;
@@ -60,58 +68,100 @@ export const ChatItem = ({
 
 
 
-  return <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
-    <div className="group flex gap-x-2 items-start w-full">
+  return (
+    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
+      <div className="group flex gap-x-2 items-start w-full">
         {/* UI for image avatar for message who sent this */}
         <div className="cursor-pointer hover:drop-shadow-md transition">
-            <UserAvatar src={member.profile.imageUrl} />
+          <UserAvatar src={member.profile.imageUrl} />
         </div>
 
         <div className="flex flex-col w-full">
-            <div className="flex items-center gap-x-2">
-                <div className="flex items-center">
-                    <p className="font-semibold text-sm hover:underline cursor-pointer">
-                        {member.profile.name}
-                    </p>
-                    <ActionTooltip label={member.role}>
-                        {roleIconMap[member.role]}
-                    </ActionTooltip>
-                </div>
-                <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {timestamp}
-                </span>
+          <div className="flex items-center gap-x-2">
+            <div className="flex items-center">
+              <p className="font-semibold text-sm hover:underline cursor-pointer">
+                {member.profile.name}
+              </p>
+              <ActionTooltip label={member.role}>
+                {roleIconMap[member.role]}
+              </ActionTooltip>
             </div>
-            {/* UI FOR MESSAGE AS A IMAGES */}
-            {isImage && (
-              <a 
-                href={fileUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="relative aspect-square rounded-md mt-2 border flex overflow-hidden items-center bg-secondary h-48 w-48"> 
-                <Image 
-                  src={fileUrl}
-                  alt={content}
-                  fill
-                  className="object-cover"
-                />
-                </a>
-            )}
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              {timestamp}
+            </span>
+          </div>
+          {/* UI FOR MESSAGE AS A IMAGES */}
+          {isImage && (
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative aspect-square rounded-md mt-2 border flex overflow-hidden items-center bg-secondary h-48 w-48">
+              <Image
+                src={fileUrl}
+                alt={content}
+                fill
+                className="object-cover"
+              />
+            </a>
+          )}
 
-            {/* UI FOR MESSAGES AS A PDF */}
-            {isPdf && (
-                <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
-                  <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
-                  <a
-                    href={fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline">
-                    PDF File
-                  </a>
-                </div>
-            )}
+          {/* UI FOR MESSAGES AS A PDF */}
+          {isPdf && (
+            <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
+              <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+              <a
+                href={fileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline">
+                PDF File
+              </a>
+            </div>
+          )}
+
+          {!fileUrl && !isEditing && (
+            <p
+              className={cn(
+                "text-sm text-zinc-600 dark:text-zinc-300",
+                // So on deleted we will make it look like in italic
+                deleted &&
+                  "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1"
+              )}>
+              {content}
+              {/* If you ever updated the message the this will also appear on screen */}
+              {isUpdated && !deleted && (
+                <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
+                  (edited)
+                </span>
+              )}
+            </p>
+          )}
         </div>
+      </div>
 
+      {canDeleteMessage && (
+        <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
+
+          {/* ONLY APPEAR WHEN THE USER IS ELIGIBLE TO EDIT MESSAGE */}
+          {canEditMessage && (
+            <ActionTooltip label="Edit">
+              <Edit 
+                onClick={()=> setIsEditing(true)}
+                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition" 
+              />
+            </ActionTooltip>
+          )}
+
+          {/* ONLY APPEAR WHEN THE USER IS ELIGIBLE TO DELETE MESSAGE */}
+          <ActionTooltip label="Delete">
+            <Trash 
+              onClick={()=> setDeleting(true)}
+              className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-600 transition" 
+            />
+          </ActionTooltip>
+        </div>
+      )}
     </div>
-  </div>;
+  );
 };
