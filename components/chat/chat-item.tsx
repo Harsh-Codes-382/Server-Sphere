@@ -1,4 +1,10 @@
 "use client";
+// Necessary imports for form 
+import * as z from "zod";
+import qs from "query-string";
+import axios from "axios";
+import {useForm} from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import UserAvatar from "@/components/user-avatar";
 import { ActionTooltip } from "@/components/action-tooltip";
@@ -8,8 +14,15 @@ import { Member, MemberRole, Profile } from "@prisma/client";
 
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem
+} from "@/components/ui/form"
 
 interface ChatItemProps {
   id: string;
@@ -33,6 +46,10 @@ const roleIconMap = {
     "ADMIN": <ShieldAlert className="h-4 w-4 ml-2 text-rose-500 cursor-pointer"/>
 }
 
+const formSchema = z.object({
+  content: z.string().min(1),
+});
+
 export const ChatItem = ({
   id,
   content,
@@ -48,6 +65,20 @@ export const ChatItem = ({
 
   const [isEditing, setIsEditing] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues:{
+      content: content,
+    }
+  });
+
+  useEffect(()=>{
+    form.reset({
+      content: content,
+    });
+  },[content]);
+
 
     const fileType = fileUrl?.split(".").pop(); // get the file extension from backside of fileUrl
 
