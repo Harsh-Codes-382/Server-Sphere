@@ -98,6 +98,9 @@ export const ChatItem = ({
 
       await axios.patch(url, values);
       
+      form.reset();
+      setIsEditing(false);
+      
     } catch (error) {
 
       console.log(error);
@@ -184,7 +187,7 @@ export const ChatItem = ({
             </div>
           )}
 
-          {/* UI FOR TEXT MESSAGES */}
+          {/* UI FOR TEXT MESSAGES And it appears as soon as we set the state for isEditing*/}
 
           {!fileUrl && !isEditing && (
             <p
