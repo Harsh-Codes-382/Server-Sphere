@@ -26,6 +26,7 @@ import {
   FormItem
 } from "@/components/ui/form"
 import { useModal } from "@/hooks/use-modal-store";
+import { useRouter, useParams } from "next/navigation";
 
 interface ChatItemProps {
   id: string;
@@ -66,6 +67,9 @@ export const ChatItem = ({
   socketUrl,
 }: ChatItemProps) => {
 
+  const router = useRouter();
+  const params = useParams();
+
   const [isEditing, setIsEditing] = useState(false);
   const {onOpen} = useModal();
 
@@ -75,6 +79,14 @@ export const ChatItem = ({
       content: content,
     }
   });
+
+  const onMemberClick = () =>{
+    if(member.id === currentMember.id){
+      return;
+    }
+
+    router.push(`/servers/${params?.serverId}/conversations/${member.id}`);
+  }
 
     // If user press "esc" key then our editing state become false
   useEffect(()=>{
@@ -139,15 +151,19 @@ export const ChatItem = ({
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
-        {/* UI for image avatar for message who sent this */}
-        <div className="cursor-pointer hover:drop-shadow-md transition">
+        {/* UI for image avatar for message who sent this & onclick to redirect on conversations page with that member*/}
+        <div
+          onClick={onMemberClick}
+          className="cursor-pointer hover:drop-shadow-md transition">
           <UserAvatar src={member.profile.imageUrl} />
         </div>
 
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-x-2">
             <div className="flex items-center">
-              <p className="font-semibold text-sm hover:underline cursor-pointer">
+              <p
+                onClick={onMemberClick}
+                className="font-semibold text-sm hover:underline cursor-pointer">
                 {member.profile.name}
               </p>
               <ActionTooltip label={member.role}>
@@ -210,34 +226,34 @@ export const ChatItem = ({
           {/*  */}
           {!fileUrl && isEditing && (
             <Form {...form}>
-              <form 
+              <form
                 className="flex items-center w-full gap-x-2 pt-2"
                 onSubmit={form.handleSubmit(onSubmit)}>
-                <FormField 
+                <FormField
                   control={form.control}
                   name="content"
                   render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormControl>
-                    <div className="relative w-full">
-                      <Input
-                        disabled={isLoading}
-                        className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-                        placeholder="Edit Message"
-                        {...field}
-                      />
-                    </div>
-                    </FormControl>
-                  </FormItem>
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Input
+                            disabled={isLoading}
+                            className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                            placeholder="Edit Message"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                    </FormItem>
                   )}
                 />
                 <Button disabled={isLoading} size="sm" variant="primary">
                   Save
                 </Button>
-                </form>
-                <span className="text-[10px] mt-1 text-zinc-400">
-                  Press esc to cancel, enter to save
-                </span>
+              </form>
+              <span className="text-[10px] mt-1 text-zinc-400">
+                Press esc to cancel, enter to save
+              </span>
             </Form>
           )}
         </div>
@@ -258,10 +274,12 @@ export const ChatItem = ({
           {/* ONLY APPEAR WHEN THE USER IS ELIGIBLE TO DELETE MESSAGE */}
           <ActionTooltip label="Delete">
             <Trash
-              onClick={() => onOpen("deleteMessage", {
-                apiUrl: `${socketUrl}/${id}`,
-                query: socketQuery
-              })}
+              onClick={() =>
+                onOpen("deleteMessage", {
+                  apiUrl: `${socketUrl}/${id}`,
+                  query: socketQuery,
+                })
+              }
               className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-600 transition"
             />
           </ActionTooltip>
