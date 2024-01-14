@@ -25,6 +25,7 @@ import {
   FormField,
   FormItem
 } from "@/components/ui/form"
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ChatItemProps {
   id: string;
@@ -66,7 +67,7 @@ export const ChatItem = ({
 }: ChatItemProps) => {
 
   const [isEditing, setIsEditing] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const {onOpen} = useModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -257,7 +258,10 @@ export const ChatItem = ({
           {/* ONLY APPEAR WHEN THE USER IS ELIGIBLE TO DELETE MESSAGE */}
           <ActionTooltip label="Delete">
             <Trash
-              onClick={() => setDeleting(true)}
+              onClick={() => onOpen("deleteMessage", {
+                apiUrl: `${socketUrl}/${id}`,
+                query: socketQuery
+              })}
               className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-600 transition"
             />
           </ActionTooltip>
