@@ -7,6 +7,7 @@ import { Loader2, ServerCrash } from "lucide-react";
 import { Fragment } from "react";
 import { ChatItem } from "./chat-item";
 import {format} from "date-fns";
+import { useChatSocket } from "@/hooks/use-chat-socket";
 
 const DATE_FORMAT = "d MMM yyyy, HH:mm";
 
@@ -40,32 +41,40 @@ export const ChatMessages = ({
   paramValue,
   type,
 }: ChatMessagesProps) => {
-
-
-
   const queryKey = `chat:${chatId}`;
-  const {data, fetchNextPage, isFetchingNextPage, hasNextPage, status} = useChatQuery({ queryKey ,apiUrl, paramKey, paramValue});
 
+  // This "addKey" is should be same as channelKey in a pages/api/socket/messages/index.ts because we are using this id for socket from backend to emit the message info on this "id"
+  const addKey = `chat:${chatId}:messages`;
 
-  if(status === 'loading'){
+  // This "updateKey" should be same as a updateKey in pages/api/socket/messages/[message.ts] because this id we are using in socket and sending the new Message from backend on this connection
+  const updateKey = `chat:${chatId}messages:update`;
+  const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } =
+    useChatQuery({ queryKey, apiUrl, paramKey, paramValue });
+
+  // Use this custom hook for showing the messages upadte and new Message in realtime 
+  useChatSocket({ queryKey, addKey, updateKey });
+
+  if (status === "loading") {
     return (
       <div className="flex flex-col flex-1 justify-center items-center">
-        <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4"/>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">Loading messages...</p>
+        <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Loading messages...
+        </p>
       </div>
-    )
+    );
   }
 
-   if (status === "error") {
-     return (
-       <div className="flex flex-col flex-1 justify-center items-center">
-         <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
-         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-           Something went wrong!
-         </p>
-       </div>
-     );
-   }
+  if (status === "error") {
+    return (
+      <div className="flex flex-col flex-1 justify-center items-center">
+        <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Something went wrong!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
