@@ -4,7 +4,7 @@ import { Member, Message, Profile } from "@prisma/client";
 import { ChatWelcome } from "./chat-welcome";
 import { useChatQuery } from "@/hooks/use-chat-query";
 import { Loader2, ServerCrash } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useRef, ElementRef } from "react";
 import { ChatItem } from "./chat-item";
 import {format} from "date-fns";
 import { useChatSocket } from "@/hooks/use-chat-socket";
@@ -48,6 +48,10 @@ export const ChatMessages = ({
 
   // This "updateKey" should be same as a updateKey in pages/api/socket/messages/[message.ts] because this id we are using in socket and sending the new Message from backend on this connection
   const updateKey = `chat:${chatId}messages:update`;
+
+  const chatRef = useRef<ElementRef<"div">>(null);
+  const BottomRef = useRef<ElementRef<"div">>(null);
+
   const { data, fetchNextPage, isFetchingNextPage, hasNextPage, status } =
     useChatQuery({ queryKey, apiUrl, paramKey, paramValue });
 
@@ -78,9 +82,25 @@ export const ChatMessages = ({
 
   return (
     <>
-      <div className="flex flex-1 flex-col py-4 overflow-y-auto">
-        <div className="flex-1" />
-        <ChatWelcome type={type} name={name} />
+      <div ref={chatRef} className="flex flex-1 flex-col py-4 overflow-y-auto">
+        {/* If on scroll up we don't have any old messages to load only then shows this ChatWelcome component   */}
+        {!hasNextPage && <div className="flex-1" />}
+        {!hasNextPage && (<ChatWelcome type={type} name={name} />)}
+        
+        {/* If you have more than message already loaded and you want to load more old message to scroll up and if you have old message to load then show this button for fetch more older mesasge and loader to show the fetching */}
+
+        {hasNextPage && (
+          <div className="flex justify-center">
+            {isFetchingNextPage ? (
+            <Loader2 className="h-6 w-6 text-zinc-500 animate-spin my-4"/>) : (
+            <button 
+              onClick={()=> fetchNextPage()}
+              className="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 text-xs my-4 dark:hover:text-zinc-300 transition">
+              Load Previous message
+            </button>) 
+            }
+          </div>
+        )}
         <div className="flex flex-col-reverse mt-auto">
           {data?.pages?.map((group, i) => (
             <Fragment key={i}>
@@ -103,6 +123,7 @@ export const ChatMessages = ({
             </Fragment>
           ))}
         </div>
+        <div ref={BottomRef}/>
       </div>
     </>
   );
