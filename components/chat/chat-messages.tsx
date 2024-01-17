@@ -8,6 +8,7 @@ import { Fragment, useRef, ElementRef } from "react";
 import { ChatItem } from "./chat-item";
 import {format} from "date-fns";
 import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
 
 const DATE_FORMAT = "d MMM yyyy, HH:mm";
 
@@ -58,6 +59,21 @@ export const ChatMessages = ({
   // Use this custom hook for showing the messages upadte and new Message in realtime 
   useChatSocket({ queryKey, addKey, updateKey });
 
+  // custom hook for autoscroll and scroll message on scroll up
+  useChatScroll({
+    chatRef,
+    bottomRef: BottomRef,
+
+    // if there is even a data to fetch more data
+    shouldLoadMore: isFetchingNextPage && !!hasNextPage,
+
+    loadMore: fetchNextPage,  // this func() fetches more messages
+
+    // count takes the number of items there is to load else default is 0
+    count: data?.pages?.[0]?.items.length ?? 0
+
+  });
+
   if (status === "loading") {
     return (
       <div className="flex flex-col flex-1 justify-center items-center">
@@ -86,7 +102,7 @@ export const ChatMessages = ({
         {/* If on scroll up we don't have any old messages to load only then shows this ChatWelcome component   */}
         {!hasNextPage && <div className="flex-1" />}
         {!hasNextPage && (<ChatWelcome type={type} name={name} />)}
-        
+
         {/* If you have more than message already loaded and you want to load more old message to scroll up and if you have old message to load then show this button for fetch more older mesasge and loader to show the fetching */}
 
         {hasNextPage && (
