@@ -1,6 +1,7 @@
 import ChatHeader from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
+import { MediaRoom } from "@/components/media-room";
 
 import { GetorCreateConversation } from "@/lib/conversation";
 import { Currentprofile } from "@/lib/current-profile";
@@ -14,9 +15,12 @@ interface MemberIdPageProps {
   params:{
     memberId: string;
     serverId: string;
+  },
+  searchParams:{
+    video?: boolean;
   }
 }
-const MemberIdPage = async ({params} : MemberIdPageProps) => {
+const MemberIdPage = async ({params, searchParams} : MemberIdPageProps) => {
   // 
 
   // This memberId is id of that member on which we clicked from frontSide and we sent that memberId in params
@@ -62,7 +66,6 @@ const MemberIdPage = async ({params} : MemberIdPageProps) => {
 
   return (
     <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
-
       <ChatHeader
         imageUrl={otherMember.profile.imageUrl}
         name={otherMember.profile.name}
@@ -70,30 +73,42 @@ const MemberIdPage = async ({params} : MemberIdPageProps) => {
         type="conversation"
       />
 
-      <ChatMessages
-        type="conversation"
-        name={otherMember.profile.name}
-        member={currentMember}
-        chatId={conversation.id}
-        apiUrl="/api/direct-messages"
-        paramKey = "conversationId"
-        paramValue={conversation.id}
-        socketUrl="/api/socket/direct-messages"
-        socketQuery={{
-            conversationId: conversation.id
-        }}
-      />
+  {/* So, render this MediaRoom component when in params video is true on clicking of video call button so, chatId is conversation.id becuase this is what keep two user connected to each other so this acts as a room Id */}
+      {searchParams.video && (
+        <MediaRoom video={true} audio={true} chatId={conversation.id}/>
+      )}
 
-      <ChatInput
-        type="conversation"
-        name={otherMember.profile.name}
-        apiUrl="/api/socket/direct-messages"
-        query={{
-          conversationId:conversation.id
-        }}
-      />
+{/* Only render this chatMessage and chatInput when you haven't clicked on video Call button because on clicking it video sets to true */}
+      {!searchParams.video && (
+        <>
+          <ChatMessages
+            type="conversation"
+            name={otherMember.profile.name}
+            member={currentMember}
+            chatId={conversation.id}
+            apiUrl="/api/direct-messages"
+            paramKey="conversationId"
+            paramValue={conversation.id}
+            socketUrl="/api/socket/direct-messages"
+            socketQuery={{
+              conversationId: conversation.id,
+            }}
+          />
+
+          <ChatInput
+            type="conversation"
+            name={otherMember.profile.name}
+            apiUrl="/api/socket/direct-messages"
+            query={{
+              conversationId: conversation.id,
+            }}
+          />
+        </>
+      )}
+
+
     </div>
-  )
+  );
 }
 
 export default MemberIdPage
