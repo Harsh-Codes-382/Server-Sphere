@@ -61,7 +61,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponseSer
           return res.status(404).json({ error: "member Not found" });
         }
 
-        // Now store the message we typed and send here
+        // Now store the message we typed and send here and store as sender as us
         const message = await db.message.create({
             data:{
                 content,
